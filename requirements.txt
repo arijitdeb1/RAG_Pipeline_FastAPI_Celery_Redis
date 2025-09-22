@@ -1,1 +1,12 @@
+fastapi
+uvicorn
+celery[redis]
+redis
+flower
+langchain-community
+langchain-openai
+pypdf
+chromadb
+gradio
+requests
 
