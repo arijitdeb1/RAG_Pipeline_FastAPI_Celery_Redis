@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./app:/app # Live code reloading during development
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+
+  celery_worker:
+    build: .
+    command: celery -A worker.celery_app worker --loglevel=info --queues=default # Only consume from default queue
+    volumes:
+      - ./app:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  rag_worker:
+    build: .
+    command: celery -A rag.rag_worker.celery_app worker --loglevel=info --queues=rag # Only consume from rag queue
+    volumes:
+      - ./app:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - redis
+
+  flower:
+    build: .
+    command: celery -A rag.rag_worker.celery_app flower --port=5555 --broker=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - celery_worker
+      - rag_worker    
