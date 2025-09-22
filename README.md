@@ -27,7 +27,7 @@ Here’s a quick overview of the components:
 - **Docker** is used to containerize and orchestrate all components for consistent deployment.
 - A **Gradio** interface is included for easy interaction with the RAG pipeline.
 
-![img.png](img.png)
+<img width="1136" height="639" alt="image" src="https://github.com/user-attachments/assets/7869544c-9c0b-4d82-9b09-d6abbb973edc" />
 
 ## Step-by-step implementation
 **Step 1: Install dependencies**
